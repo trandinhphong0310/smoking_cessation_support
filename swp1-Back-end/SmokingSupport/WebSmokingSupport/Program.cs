@@ -109,6 +109,10 @@ using Microsoft.Extensions.FileProviders;
                         .AllowAnyHeader()
                         .AllowAnyMethod());
             });
+
+
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+            builder.WebHost.UseUrls($"http://*:{port}");
             var app = builder.Build();
             
 
