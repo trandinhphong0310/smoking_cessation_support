@@ -1,26 +1,24 @@
-# Giai đoạn build
+# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy file .csproj
-COPY WebSmokingSupport.csproj ./
+# Copy .csproj
+COPY WebSmokingSupport/WebSmokingSupport.csproj WebSmokingSupport/
 
-# Chạy restore
-RUN dotnet restore WebSmokingSupport.csproj
+# Restore dependencies
+WORKDIR /src/WebSmokingSupport
+RUN dotnet restore
 
 # Copy toàn bộ mã nguồn
-COPY . ./
+COPY WebSmokingSupport/ ./WebSmokingSupport/
 
-# Build & publish
+# Publish
 RUN dotnet publish -c Release -o /app/publish
 
-# Giai đoạn runtime
+# Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Mở cổng 80
 EXPOSE 80
-
-# Chạy ứng dụng
 ENTRYPOINT ["dotnet", "WebSmokingSupport.dll", "--urls", "http://+:80"]
