@@ -1,0 +1,19 @@
+
+[variables]
+DOTNET_VERSION = "8.0"
+
+[phases.setup]
+nixPkgs = ["dotnet-sdk_8"]
+
+[phases.install]
+cmds = [
+  "dotnet restore WebSmokingSupport/WebSmokingSupport.csproj"
+]
+
+[phases.build]
+cmds = [
+  "dotnet publish WebSmokingSupport/WebSmokingSupport.csproj -c Release -o out"
+]
+
+[start]
+cmd = "dotnet ./out/WebSmokingSupport.dll"
