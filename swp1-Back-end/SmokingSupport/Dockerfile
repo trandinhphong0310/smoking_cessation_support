@@ -1,22 +1,23 @@
+# Use .NET 8 SDK to build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy .csproj
-COPY swp1-Back-end/SmokingSupport/WebSmokingSupport/WebSmokingSupport.csproj ./WebSmokingSupport/
+# Copy the .csproj file
+COPY WebSmokingSupport/WebSmokingSupport.csproj ./WebSmokingSupport/
 
-# Restore
-WORKDIR /src/WebSmokingSupport
-RUN dotnet restore
+# Restore dependencies
+RUN dotnet restore ./WebSmokingSupport/WebSmokingSupport.csproj
 
-# Copy toàn bộ mã nguồn
-COPY swp1-Back-end/SmokingSupport/WebSmokingSupport/ ./WebSmokingSupport/
+# Copy entire source code
+COPY . .
 
-# Build
-RUN dotnet publish -c Release -o /app/publish
+# Build and publish the app
+RUN dotnet publish ./WebSmokingSupport/WebSmokingSupport.csproj -c Release -o /app/publish
 
+# Use .NET 8 runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
 EXPOSE 80
-ENTRYPOINT ["dotnet", "WebSmokingSupport.dll", "--urls", "http://+:80"]
+ENTRYPOINT ["dotnet", "WebSmokingSupport.dll"]
